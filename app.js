@@ -1,23 +1,52 @@
-var myapp = angular.module('myapp',[]);
-//console.log(myapp);
+var myapp = angular.module('myapp', ['ui.router']);
 
-myapp.controller('MyCtrl',['$scope', 'AppService',
-    function($scope, AppService){
+myapp.config(['$stateProvider','$urlRouterProvider',function($stateProvider,$urlRouterProvider){
+    $stateProvider.state({
+        name: 'home',
+        url: '/home',
+        component:'home'
+    });
 
-        AppService.getStudents().then(function(result){
+    $stateProvider.state({
+        name: 'about',
+        url: '/about',
+        component: 'about'
+    });
+    $urlRouterProvider.otherwise('/home');
 
-            $scope.students = result.data.map(function(item){
-                item.seniority = item.age>10? "Senior" : "Junior";
-                return item;
-            });
-        })
+}]);
 
-      //$scope.students = AppService.getStudents();
+myapp.controller('MyCtrl', ['$scope', 'AppService', 
+function($scope, AppService){
+    $scope.name = 'Myname';
+    $scope.mydate = '1518515719648';
+    
+    AppService.getStudents()
+        .then(function(result){
+            $scope.students = result;
+        });    
 
-       $scope.onClick = function(students){
-        $scope.selected = students;
+    $scope.onViewBtnClick = function(student){
+        $scope.selectedStudent = student;
     };
-    
-    
-   
-    }]); //Dependency Injection
+
+    $scope.onBtnClick = function(event){
+        console.log(event.target);
+        AppService.getData().then(function(res) {
+            alert("data1 is " + res);
+        });
+        
+    };
+
+    $scope.onAnotherBtnClick = function(){
+        AppService.getData().then(function(res){
+            alert("data2 is " + res);
+        }, function(){
+            console.log('err');
+        });
+        
+    };
+
+
+
+}]);
